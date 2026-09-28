@@ -99,10 +99,27 @@ stone tile), `DINO_RARE` (T-Rex/Spinosaurus, dirt ground), `RIVER`
 faster common dinos, and grass is a hazard lane in its own right, not just
 the safe-rest ground type.
 
-Not yet generated/wired: Stone tile, Log/Wood Bridge tile (for a log-based
-river crossing variant), Tree (Pine), Sign Post, Fence, Crystal, Mushroom,
-Stone (Small), Barrel, Crate, Stump, and every Lava/Ice/Sand/Road/Swamp/Snow
-tile (all out of scope for World 01 — reference for future worlds only).
+**Coin** (`assets/props/coin.glb`) is also a real model, but generated
+differently from everything else: there's no clean reference crop for it (the
+"star coin" icon only appears in the original mockup image, which wasn't
+saved to this repo), so it was generated with Meshy's *text-to-3d* endpoint
+instead of image-to-3d — a text prompt describing a gold five-pointed star
+coin, previewed as an untextured mesh first (to confirm the shape: it came
+back as a star embossed on a circular coin rim, a good match for a "star
+coin"), then refined with a texture prompt. The first refine pass used
+`enable_pbr: true`, which rendered too dark/muddy under Godot's compatibility
+renderer (it has no real specular IBL, so metallic materials read as flat
+and dim without a reflection probe/skybox) — refining again with
+`enable_pbr: false` (matching every other asset in this project) produced a
+bright, flat-shaded gold texture that reads clearly in gameplay. `Coin.gd`
+loads it via `ModelUtil.load_fitted()` like everything else, with the
+original primitive cylinder kept as a fallback.
+
+Not yet generated/wired: Wood Bridge tile (a distinct log-based river
+crossing tile, separate from the log *platform* variant above), Tree (Pine),
+Sign Post, Fence, Crystal, Mushroom, Stone (Small), Barrel, Crate, Stump, and
+every Lava/Ice/Sand/Road/Swamp/Snow tile (all out of scope for World 01 —
+reference for future worlds only).
 
 ## A note on the render pipeline used to verify all of this
 

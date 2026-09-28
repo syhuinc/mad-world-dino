@@ -8,7 +8,7 @@ A Crossy Road-style lane crosser built in Godot 4. Dinosaurs are the "traffic":
 
 Also has: coin collection with a persistent wallet, best-distance tracking, a title screen showing your best run, pause/resume, procedurally-generated sound effects (hop/coin/death — no audio files needed) with a mute toggle, and Android back-button handling (pauses in-run, quits from the title/game-over screens).
 
-All 7 creatures (player, T-Rex, Spinosaurus, Triceratops, Gallimimus, Parasaurolophus, crocodile), the grass/dirt/stone/water ground tiles plus a log river variant, and all edge decorations (rock/bush/palm-tree/flower/reed/lily-pad) are real Meshy-generated `.glb` models — see `reference/INDEX.md` for exactly what was generated from what (everything outside World 01's biome is still reference-only).
+All 7 creatures (player, T-Rex, Spinosaurus, Triceratops, Gallimimus, Parasaurolophus, crocodile), the grass/dirt/stone/water ground tiles plus a log river variant, the gold star coin, and all edge decorations (rock/bush/palm-tree/flower/reed/lily-pad) are real Meshy-generated `.glb` models — see `reference/INDEX.md` for exactly what was generated from what (everything outside World 01's biome is still reference-only).
 
 ## Requirements
 
