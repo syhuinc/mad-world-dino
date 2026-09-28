@@ -6,6 +6,13 @@ enum DinoSpecies { PARA, GALLI, TRI, TREX, SPINO }
 const TILE_SIZE := 2.0
 const COLS := 9
 const Decoration = preload("res://scripts/Decoration.gd")
+const ModelUtil = preload("res://scripts/ModelUtil.gd")
+const TILE_HEIGHT := 0.5
+const TILE_MODELS := {
+	LaneType.RIVER: "res://assets/tiles/water.glb",
+	LaneType.GRASS: "res://assets/tiles/grass.glb",
+}
+const DEFAULT_TILE_MODEL := "res://assets/tiles/dirt.glb"
 
 var player: Node3D
 var lanes: Dictionary = {}
@@ -119,7 +126,18 @@ func _decorate_edges(lane_root: Node3D, type: int) -> void:
 		deco.position = Vector3(side * (half + edge_margin), y, randf_range(-0.6, 0.6))
 		lane_root.add_child(deco)
 
-func _make_ground(type: int) -> MeshInstance3D:
+func _make_ground(type: int) -> Node3D:
+	var container := Node3D.new()
+	var model_path: String = TILE_MODELS.get(type, DEFAULT_TILE_MODEL)
+
+	if ResourceLoader.exists(model_path):
+		var tile_size := Vector3(TILE_SIZE, TILE_HEIGHT, TILE_SIZE)
+		for c in range(COLS):
+			var tile := ModelUtil.load_fitted(model_path, tile_size)
+			tile.position = Vector3(_col_to_x(c), -TILE_HEIGHT * 0.5, 0)
+			container.add_child(tile)
+		return container
+
 	var mesh := MeshInstance3D.new()
 	var box := BoxMesh.new()
 	box.size = Vector3(COLS * TILE_SIZE, 0.2, TILE_SIZE)
@@ -134,7 +152,8 @@ func _make_ground(type: int) -> MeshInstance3D:
 		_:
 			mat.albedo_color = Color(0.62, 0.52, 0.38)
 	mesh.material_override = mat
-	return mesh
+	container.add_child(mesh)
+	return container
 
 func _col_to_x(c: int) -> float:
 	return (c - int(COLS / 2)) * TILE_SIZE

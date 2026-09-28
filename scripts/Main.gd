@@ -41,11 +41,14 @@ func _setup_world() -> void:
 
 	# Permanent backdrop so the camera never sees empty background where no
 	# lane has been generated yet (e.g. behind row 0 at the start of a run).
+	# Kept well below any lane geometry (including the uneven undersides of
+	# real 3D tile models) so it never competes with or shows through real
+	# ground — it should only ever be visible where no lane exists at all.
 	var backdrop := MeshInstance3D.new()
 	var box := BoxMesh.new()
 	box.size = Vector3(200.0, 0.1, 800.0)
 	backdrop.mesh = box
-	backdrop.position = Vector3(0, -0.1, -380.0)
+	backdrop.position = Vector3(0, -3.0, -380.0)
 	var mat := StandardMaterial3D.new()
 	mat.albedo_color = Color(0.45, 0.72, 0.35)
 	backdrop.material_override = mat
