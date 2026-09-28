@@ -8,11 +8,17 @@ const MODEL_PATHS := {
 	Kind.ROCK: "res://assets/props/rock.glb",
 	Kind.BUSH: "res://assets/props/bush.glb",
 	Kind.PALM_TREE: "res://assets/props/palm.glb",
+	Kind.FLOWER: "res://assets/props/flower.glb",
+	Kind.REED: "res://assets/props/reed.glb",
+	Kind.LILY_PAD: "res://assets/props/lily_pad.glb",
 }
 const MODEL_SIZES := {
 	Kind.ROCK: Vector3(0.55, 0.45, 0.55),
 	Kind.BUSH: Vector3(0.75, 0.65, 0.75),
 	Kind.PALM_TREE: Vector3(0.6, 1.9, 0.6),
+	Kind.FLOWER: Vector3(0.35, 0.4, 0.35),
+	Kind.REED: Vector3(0.3, 0.7, 0.3),
+	Kind.LILY_PAD: Vector3(0.6, 0.06, 0.6),
 }
 
 func setup(kind: int) -> void:

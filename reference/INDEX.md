@@ -75,11 +75,21 @@ limitation) — not fixed, since the character is otherwise correct.
   `model_path`/`fallback_color` params (same riding mechanics, just a log
   reskin) — the mockup's "step on crocs" is the primary mechanic, logs are
   visual variety on the same river lanes, not a separate lane type.
-- Rock (small), Bush, Tree (Palm) (`assets/props/*.glb`, generated from
-  crops of `tile_variant_sheet_a.png`'s prop row) — used by
+- Rock (small), Bush, Tree (Palm), Flower, Reed, Lily Pad (`assets/props/*.glb`,
+  generated from crops of `tile_variant_sheet_a.png`'s prop rows) — used by
   `Decoration.gd` for the cosmetic edge dressing along each lane
-  (`LaneManager._decorate_edges()`); Flower/Reed/Lily Pad in `Decoration.gd`
-  are still simple primitives, not yet generated.
+  (`LaneManager._decorate_edges()`): Flower/Reed/Lily Pad complete the full
+  prop set, replacing the last primitive placeholders in `Decoration.gd`
+  (the primitive code paths remain only as a fallback if a model fails to
+  load). The initial Flower/Reed crops picked up a stray artifact from the
+  sprite sheet's grid — a small floating ghost shape reconstructed from a
+  neighboring label's text bleeding into the crop for Flower, and two thin
+  stray blades from neighboring prop bleed for Reed — both invisible in the
+  2D crop preview but visible once reconstructed in 3D, and both would have
+  thrown off `ModelUtil.load_fitted`'s auto-scaling since it measures the
+  *combined* bounding box of every mesh in the file. Fixed by re-cropping
+  tighter (fully inside each prop's own grid cell, no edge bleed) and
+  regenerating; Lily Pad's original crop was already clean.
 
 **Lane/species pairing matches the mockup's "Lane Examples" strip**, not an
 even mix: `LaneManager.LaneType` is `GRASS` (safe rest), `GRASS_DANGER`

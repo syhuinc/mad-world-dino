@@ -8,7 +8,7 @@ A Crossy Road-style lane crosser built in Godot 4. Dinosaurs are the "traffic":
 
 Also has: coin collection with a persistent wallet, best-distance tracking, a title screen showing your best run, pause/resume, procedurally-generated sound effects (hop/coin/death — no audio files needed) with a mute toggle, and Android back-button handling (pauses in-run, quits from the title/game-over screens).
 
-All 7 creatures (player, T-Rex, Spinosaurus, Triceratops, Gallimimus, Parasaurolophus, crocodile), the grass/dirt/water ground tiles, and the rock/bush/palm-tree edge decorations are real Meshy-generated `.glb` models (see `reference/INDEX.md` for exactly what was generated from what, and what's still a primitive placeholder — a few decoration types and everything outside World 01's biome).
+All 7 creatures (player, T-Rex, Spinosaurus, Triceratops, Gallimimus, Parasaurolophus, crocodile), the grass/dirt/stone/water ground tiles plus a log river variant, and all edge decorations (rock/bush/palm-tree/flower/reed/lily-pad) are real Meshy-generated `.glb` models — see `reference/INDEX.md` for exactly what was generated from what (everything outside World 01's biome is still reference-only).
 
 ## Requirements
 
@@ -51,7 +51,7 @@ This part needs the actual Android SDK + a JDK, which this environment doesn't h
 - `scripts/CameraRig.gd` — fixed-angle orthographic follow camera
 - `scripts/HUD.gd` — title / in-run HUD / pause / game-over screens, built entirely in code (no hand-authored `.tscn` UI layout)
 - `scripts/ModelUtil.gd` — loads a `.glb`, measures its true combined mesh bounding box, and scales/centers it (non-uniformly, per axis, with an optional yaw correction) to exactly match a target size. Used everywhere a real model replaces a primitive.
-- `scripts/Decoration.gd` — cosmetic edge dressing (rock/bush/palm-tree models, or flower/reed/lily-pad primitives) placed outside the playable columns
+- `scripts/Decoration.gd` — cosmetic edge dressing (rock/bush/palm-tree/flower/reed/lily-pad models) placed outside the playable columns
 
 Most gameplay logic is built procedurally at runtime rather than as hand-placed `.tscn` scene trees. `LaneManager.TILE_SIZE`/`COLS` and `Player.TILE_SIZE`/`COLS` are the main tunable knobs for scale/lane width.
 
