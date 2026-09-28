@@ -67,7 +67,8 @@ func _generate_row(row: int) -> void:
 		var cycle = (row - 1) % 4
 		match cycle:
 			0:
-				type = LaneType.GRASS
+				var skip_rest_chance = clamp((row - 20) * 0.01, 0.0, 0.35)
+				type = LaneType.DINO_COMMON if randf() < skip_rest_chance else LaneType.GRASS
 			2:
 				type = LaneType.RIVER
 			_:
@@ -82,10 +83,14 @@ func _generate_row(row: int) -> void:
 	match type:
 		LaneType.DINO_COMMON:
 			nodes.append_array(_spawn_dino_common(lane_root, row))
+			if randf() < 0.25:
+				nodes.append(_spawn_coin(lane_root, randi_range(1, COLS - 2)))
 		LaneType.DINO_RARE:
 			nodes.append_array(_spawn_dino_rare(lane_root, row))
 		LaneType.RIVER:
 			nodes.append_array(_spawn_river(lane_root, row))
+			if randf() < 0.25:
+				nodes.append(_spawn_coin(lane_root, randi_range(1, COLS - 2)))
 		LaneType.GRASS:
 			if randf() < 0.5:
 				nodes.append(_spawn_coin(lane_root, randi_range(1, COLS - 2)))

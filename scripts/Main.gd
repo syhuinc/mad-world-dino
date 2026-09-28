@@ -39,6 +39,19 @@ func _setup_world() -> void:
 	env.environment = e
 	add_child(env)
 
+	# Permanent backdrop so the camera never sees empty background where no
+	# lane has been generated yet (e.g. behind row 0 at the start of a run).
+	var backdrop := MeshInstance3D.new()
+	var box := BoxMesh.new()
+	box.size = Vector3(200.0, 0.1, 800.0)
+	backdrop.mesh = box
+	backdrop.position = Vector3(0, -0.1, -380.0)
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(0.45, 0.72, 0.35)
+	backdrop.material_override = mat
+	backdrop.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(backdrop)
+
 func _setup_player() -> void:
 	player = preload("res://scripts/Player.gd").new()
 	player.name = "Player"
