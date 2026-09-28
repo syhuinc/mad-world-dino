@@ -65,8 +65,9 @@ limitation) — not fixed, since the character is otherwise correct.
   single-subject shots (no cropping needed for Meshy input).
 
 **Real `.glb` models exist for:**
-- Grass, dirt, water tiles (`assets/tiles/*.glb`, generated directly from
-  the `*_tile_closeup.png` hero renders) — `LaneManager._make_ground()`
+- Grass, dirt, water, stone tiles (`assets/tiles/*.glb`; grass/dirt/water
+  generated directly from the `*_tile_closeup.png` hero renders, stone from
+  a crop of `tile_variant_sheet_a.png`'s row 1) — `LaneManager._make_ground()`
   tiles 9 individual instances of the right model across each lane's
   width instead of one stretched box.
 - Rock (small), Bush, Tree (Palm) (`assets/props/*.glb`, generated from
@@ -74,6 +75,14 @@ limitation) — not fixed, since the character is otherwise correct.
   `Decoration.gd` for the cosmetic edge dressing along each lane
   (`LaneManager._decorate_edges()`); Flower/Reed/Lily Pad in `Decoration.gd`
   are still simple primitives, not yet generated.
+
+**Lane/species pairing matches the mockup's "Lane Examples" strip**, not an
+even mix: `LaneManager.LaneType` is `GRASS` (safe rest), `GRASS_DANGER`
+(Parasaurolophus/Gallimimus on grass), `ROCK` (Triceratops only, on the
+stone tile), `DINO_RARE` (T-Rex/Spinosaurus, dirt ground), `RIVER`
+(crocodiles, water ground) — Triceratops no longer shares a lane with the
+faster common dinos, and grass is a hazard lane in its own right, not just
+the safe-rest ground type.
 
 Not yet generated/wired: Stone tile, Log/Wood Bridge tile (for a log-based
 river crossing variant), Tree (Pine), Sign Post, Fence, Crystal, Mushroom,

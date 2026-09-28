@@ -1,6 +1,6 @@
 extends Node3D
 
-enum LaneType { GRASS, DINO_COMMON, DINO_RARE, RIVER }
+enum LaneType { GRASS, GRASS_DANGER, ROCK, DINO_RARE, RIVER }
 enum DinoSpecies { PARA, GALLI, TRI, TREX, SPINO }
 
 const TILE_SIZE := 2.0
@@ -11,6 +11,8 @@ const TILE_HEIGHT := 0.5
 const TILE_MODELS := {
 	LaneType.RIVER: "res://assets/tiles/water.glb",
 	LaneType.GRASS: "res://assets/tiles/grass.glb",
+	LaneType.GRASS_DANGER: "res://assets/tiles/grass.glb",
+	LaneType.ROCK: "res://assets/tiles/stone.glb",
 }
 const DEFAULT_TILE_MODEL := "res://assets/tiles/dirt.glb"
 
@@ -70,18 +72,21 @@ func _generate_row(row: int) -> void:
 	if row == 0:
 		type = LaneType.GRASS
 	elif row <= 3:
-		type = LaneType.GRASS if row % 2 == 1 else LaneType.DINO_COMMON
+		type = LaneType.GRASS if row % 2 == 1 else LaneType.GRASS_DANGER
 	else:
 		var cycle = (row - 1) % 4
 		match cycle:
 			0:
 				var skip_rest_chance = clamp((row - 20) * 0.01, 0.0, 0.35)
-				type = LaneType.DINO_COMMON if randf() < skip_rest_chance else LaneType.GRASS
+				type = LaneType.GRASS_DANGER if randf() < skip_rest_chance else LaneType.GRASS
 			2:
 				type = LaneType.RIVER
 			_:
 				var rare_chance = clamp(0.05 + row * 0.004, 0.05, 0.28)
-				type = LaneType.DINO_RARE if randf() < rare_chance else LaneType.DINO_COMMON
+				if randf() < rare_chance:
+					type = LaneType.DINO_RARE
+				else:
+					type = LaneType.ROCK if randi() % 2 == 0 else LaneType.GRASS_DANGER
 
 	var nodes := []
 	var ground := _make_ground(type)
@@ -89,8 +94,12 @@ func _generate_row(row: int) -> void:
 	nodes.append(ground)
 
 	match type:
-		LaneType.DINO_COMMON:
-			nodes.append_array(_spawn_dino_common(lane_root, row))
+		LaneType.GRASS_DANGER:
+			nodes.append_array(_spawn_dino_common(lane_root, row, [DinoSpecies.PARA, DinoSpecies.GALLI], 2, 3))
+			if randf() < 0.25:
+				nodes.append(_spawn_coin(lane_root, randi_range(1, COLS - 2)))
+		LaneType.ROCK:
+			nodes.append_array(_spawn_dino_common(lane_root, row, [DinoSpecies.TRI], 1, 2))
 			if randf() < 0.25:
 				nodes.append(_spawn_coin(lane_root, randi_range(1, COLS - 2)))
 		LaneType.DINO_RARE:
@@ -147,8 +156,10 @@ func _make_ground(type: int) -> Node3D:
 	match type:
 		LaneType.RIVER:
 			mat.albedo_color = Color(0.25, 0.55, 0.85)
-		LaneType.GRASS:
+		LaneType.GRASS, LaneType.GRASS_DANGER:
 			mat.albedo_color = Color(0.45, 0.72, 0.35)
+		LaneType.ROCK:
+			mat.albedo_color = Color(0.55, 0.55, 0.58)
 		_:
 			mat.albedo_color = Color(0.62, 0.52, 0.38)
 	mesh.material_override = mat
@@ -198,12 +209,11 @@ func _spawn_dino(parent: Node3D, species: int, start_x: float, direction: float,
 	parent.add_child(dino)
 	return dino
 
-func _spawn_dino_common(parent: Node3D, row: int) -> Array:
+func _spawn_dino_common(parent: Node3D, row: int, species_pool: Array, min_count: int, max_count: int) -> Array:
 	var result := []
 	var direction = 1.0 if randi() % 2 == 0 else -1.0
 	var speed_mult = clamp(1.0 + row * 0.01, 1.0, 1.8)
-	var species_pool = [DinoSpecies.PARA, DinoSpecies.GALLI, DinoSpecies.TRI]
-	var count = randi_range(2, 3)
+	var count = randi_range(min_count, max_count)
 	var half = COLS * TILE_SIZE * 0.5
 	var slot = (half * 2.0) / count
 	for i in range(count):
