@@ -1,5 +1,9 @@
 extends Area3D
 
+const ModelUtil = preload("res://scripts/ModelUtil.gd")
+const MODEL_PATH = "res://assets/creatures/player.glb"
+const MODEL_SIZE = Vector3(0.7, 1.3, 0.5)
+
 const TILE_SIZE := 2.0
 const COLS := 9
 const HOP_TIME := 0.14
@@ -18,31 +22,37 @@ var riding_crocs: Array = []
 
 var _touch_start: Vector2
 var _touch_active: bool = false
-var _mesh: MeshInstance3D
+var _mesh: Node3D
 
 func _ready() -> void:
 	collision_layer = 1
 	collision_mask = (1 << 1) | (1 << 2) | (1 << 3) # dino, croc, coin
 	monitoring = true
 
-	var mesh := MeshInstance3D.new()
-	var capsule := CapsuleMesh.new()
-	capsule.radius = 0.35
-	capsule.height = 1.2
-	mesh.mesh = capsule
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(0.95, 0.55, 0.2)
-	mesh.material_override = mat
-	mesh.position.y = 0.6
-	add_child(mesh)
-	_mesh = mesh
+	if ResourceLoader.exists(MODEL_PATH):
+		var model := ModelUtil.load_fitted(MODEL_PATH, MODEL_SIZE)
+		model.position.y = MODEL_SIZE.y * 0.5
+		add_child(model)
+		_mesh = model
+	else:
+		var mesh := MeshInstance3D.new()
+		var capsule := CapsuleMesh.new()
+		capsule.radius = 0.35
+		capsule.height = 1.2
+		mesh.mesh = capsule
+		var mat := StandardMaterial3D.new()
+		mat.albedo_color = Color(0.95, 0.55, 0.2)
+		mesh.material_override = mat
+		mesh.position.y = 0.6
+		add_child(mesh)
+		_mesh = mesh
 
 	var shape := CollisionShape3D.new()
 	var cs := CapsuleShape3D.new()
 	cs.radius = 0.35
-	cs.height = 1.2
+	cs.height = 1.3
 	shape.shape = cs
-	shape.position.y = 0.6
+	shape.position.y = 0.65
 	add_child(shape)
 
 	area_entered.connect(_on_area_entered)

@@ -147,25 +147,23 @@ func _spawn_coin(parent: Node3D, col: int) -> Node3D:
 
 func _species_data(species: int) -> Dictionary:
 	# Sizes (length x width x height) are taken from the Mad World Meshy
-	# reference spec sheets (reference/dinosaurs/); length maps to the X
+	# reference spec sheets (reference/creatures/); length maps to the X
 	# (movement) axis, width to Z (lane depth), height to Y.
-	# Colors are placeholder-legibility choices, not the spec's authentic
-	# palette (dinos are brown/tan there, same as the dirt lane, which
-	# reads fine on a detailed shaded model but disappears on a flat
-	# primitive box) — restore the spec colors once real models land.
+	# model_path points at the real Meshy-generated glb; colors are only
+	# used for the primitive fallback if that asset is ever missing.
 	match species:
 		DinoSpecies.PARA: # spec: 2.0 x 0.8 x 1.4
-			return {"color": Color(0.85, 0.8, 0.15), "size": Vector3(2.0, 1.4, 0.8), "speed": 1.6}
+			return {"color": Color(0.85, 0.8, 0.15), "size": Vector3(2.0, 1.4, 0.8), "speed": 1.6, "model": "res://assets/creatures/parasaurolophus.glb"}
 		DinoSpecies.GALLI: # spec: 1.8 x 0.6 x 1.6
-			return {"color": Color(0.35, 0.7, 0.65), "size": Vector3(1.8, 1.6, 0.6), "speed": 2.8}
+			return {"color": Color(0.35, 0.7, 0.65), "size": Vector3(1.8, 1.6, 0.6), "speed": 2.8, "model": "res://assets/creatures/gallimimus.glb"}
 		DinoSpecies.TRI: # spec: 2.4 x 1.2 x 1.4
-			return {"color": Color(0.3, 0.45, 0.25), "size": Vector3(2.4, 1.4, 1.2), "speed": 1.1}
+			return {"color": Color(0.3, 0.45, 0.25), "size": Vector3(2.4, 1.4, 1.2), "speed": 1.1, "model": "res://assets/creatures/triceratops.glb"}
 		DinoSpecies.TREX: # spec: 3.0 x 1.8 x 2.0, scaled 1.4x so it genuinely
 			# dominates a lane per the "wait for the gap" design intent
-			return {"color": Color(0.8, 0.12, 0.12), "size": Vector3(4.2, 2.8, 2.52), "speed": 1.3}
+			return {"color": Color(0.8, 0.12, 0.12), "size": Vector3(4.2, 2.8, 2.52), "speed": 1.3, "model": "res://assets/creatures/trex.glb"}
 		DinoSpecies.SPINO: # spec: 3.2 x 1.6 x 1.8, scaled 1.4x (see T-Rex)
-			return {"color": Color(0.1, 0.3, 0.75), "size": Vector3(4.48, 2.24, 2.52), "speed": 1.4}
-	return {"color": Color.WHITE, "size": Vector3.ONE, "speed": 1.0}
+			return {"color": Color(0.1, 0.3, 0.75), "size": Vector3(4.48, 2.24, 2.52), "speed": 1.4, "model": "res://assets/creatures/spinosaurus.glb"}
+	return {"color": Color.WHITE, "size": Vector3.ONE, "speed": 1.0, "model": ""}
 
 func _spawn_dino(parent: Node3D, species: int, start_x: float, direction: float, speed_mult: float) -> Node3D:
 	var data = _species_data(species)
@@ -173,7 +171,10 @@ func _spawn_dino(parent: Node3D, species: int, start_x: float, direction: float,
 	color = color.lightened(randf_range(0.0, 0.12)) if randf() < 0.5 else color.darkened(randf_range(0.0, 0.12))
 	var dino = preload("res://scripts/Obstacle.gd").new()
 	dino.add_to_group("dino")
-	dino.setup(color, data["size"], data["speed"] * direction * speed_mult, COLS * TILE_SIZE)
+	var model_path: String = data.get("model", "")
+	if model_path != "" and not ResourceLoader.exists(model_path):
+		model_path = ""
+	dino.setup(color, data["size"], data["speed"] * direction * speed_mult, COLS * TILE_SIZE, model_path, 90.0)
 	dino.position = Vector3(start_x, data["size"].y * 0.5, 0)
 	parent.add_child(dino)
 	return dino
