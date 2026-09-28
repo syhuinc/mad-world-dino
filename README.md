@@ -6,7 +6,9 @@ A Crossy Road-style lane crosser built in Godot 4. Dinosaurs are the "traffic":
 - **Rare (occasional, major danger):** T-Rex and Spinosaurus — each spans most of a lane's width, forcing you to wait for a gap before crossing
 - **Rivers:** crocodiles act as moving platforms — land on one to ride across, miss and you drown
 
-All visuals are placeholder primitives (boxes/capsules with flat colors) standing in for the final 3D models. No Meshy assets are wired in yet.
+Also has: coin collection with a persistent wallet, best-distance tracking, a title screen showing your best run, pause/resume, procedurally-generated sound effects (hop/coin/death — no audio files needed) with a mute toggle, and Android back-button handling (pauses in-run, quits from the title/game-over screens).
+
+All visuals are placeholder primitives (boxes/capsules with flat colors) standing in for the final 3D models. No Meshy assets are wired in yet — that's the planned next step once this is playtested.
 
 ## Requirements
 
@@ -23,7 +25,8 @@ Target platform is **Android** — the project is configured portrait, touch/swi
 
 - **Mobile/touch (primary):** swipe in the direction you want to hop
 - **Desktop (for testing in-editor):** Arrow keys or WASD to hop forward/back/left/right; `emulate_touch_from_mouse` is on so you can also test swipes with the mouse
-- Pause button top-right during a run; Android back button does the same
+- Pause button top-right during a run; Android back button does the same (and quits from the title/game-over screens)
+- Mute button bottom-left, always visible
 
 ## Building for Android
 
@@ -37,7 +40,8 @@ This part needs the actual Android SDK + a JDK, which this environment doesn't h
 
 ## Project layout
 
-- `scripts/GameManager.gd` — autoload singleton: game state, score, coin wallet, save/load (`user://savegame.json`)
+- `scripts/GameManager.gd` — autoload singleton: game state, score, coin wallet, mute setting, save/load (`user://savegame.json`)
+- `scripts/Sfx.gd` — autoload singleton: procedurally synthesizes hop/coin/death tones (no audio assets) and plays them
 - `scripts/Main.gd` — builds the scene at runtime (lighting, player, lane manager, camera, HUD) and drives run resets
 - `scripts/Player.gd` — grid-hop movement/input, river-riding physics, collision handling
 - `scripts/LaneManager.gd` — procedural lane generation (grass / common dino / rare dino / river), difficulty ramp, obstacle + coin spawning

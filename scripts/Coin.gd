@@ -41,5 +41,6 @@ func collect() -> void:
 	if _collected:
 		return
 	_collected = true
+	Sfx.play("coin")
 	GameManager.add_coin()
 	queue_free()

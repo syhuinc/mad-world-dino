@@ -20,7 +20,7 @@ func _notification(what: int) -> void:
 			GameManager.State.PAUSED:
 				GameManager.set_paused(false)
 			_:
-				pass
+				get_tree().quit()
 
 func _setup_world() -> void:
 	var light := DirectionalLight3D.new()

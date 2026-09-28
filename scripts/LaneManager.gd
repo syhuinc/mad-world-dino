@@ -134,9 +134,11 @@ func _species_data(species: int) -> Dictionary:
 
 func _spawn_dino(parent: Node3D, species: int, start_x: float, direction: float, speed_mult: float) -> Node3D:
 	var data = _species_data(species)
+	var color: Color = data["color"]
+	color = color.lightened(randf_range(0.0, 0.12)) if randf() < 0.5 else color.darkened(randf_range(0.0, 0.12))
 	var dino = preload("res://scripts/Obstacle.gd").new()
 	dino.add_to_group("dino")
-	dino.setup(data["color"], data["size"], data["speed"] * direction * speed_mult, COLS * TILE_SIZE)
+	dino.setup(color, data["size"], data["speed"] * direction * speed_mult, COLS * TILE_SIZE)
 	dino.position = Vector3(start_x, data["size"].y * 0.5, 0)
 	parent.add_child(dino)
 	return dino
@@ -148,9 +150,11 @@ func _spawn_dino_common(parent: Node3D, row: int) -> Array:
 	var species_pool = [DinoSpecies.PARA, DinoSpecies.GALLI, DinoSpecies.TRI]
 	var count = randi_range(2, 3)
 	var half = COLS * TILE_SIZE * 0.5
+	var slot = (half * 2.0) / count
 	for i in range(count):
 		var species = species_pool[randi() % species_pool.size()]
-		var start_x = randf_range(-half, half)
+		var jitter = randf_range(slot * 0.15, slot * 0.85)
+		var start_x = -half + i * slot + jitter
 		result.append(_spawn_dino(parent, species, start_x, direction, speed_mult))
 	return result
 

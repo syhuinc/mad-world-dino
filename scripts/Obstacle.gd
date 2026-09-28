@@ -5,7 +5,7 @@ var half_range: float = 20.0
 
 func setup(color: Color, size: Vector3, vel_x: float, playfield_width: float) -> void:
 	velocity_x = vel_x
-	half_range = playfield_width * 0.5 + size.z
+	half_range = playfield_width * 0.5 + size.x
 
 	var mesh := MeshInstance3D.new()
 	var box := BoxMesh.new()

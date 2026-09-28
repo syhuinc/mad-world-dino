@@ -12,6 +12,8 @@ var distance_label: Label
 var final_distance_label: Label
 var final_coins_label: Label
 var best_label: Label
+var title_stats_label: Label
+var mute_btn: Button
 
 func _ready() -> void:
 	layer = 10
@@ -19,13 +21,16 @@ func _ready() -> void:
 	_build_hud()
 	_build_pause()
 	_build_game_over()
+	_build_mute_button()
 
 	GameManager.coins_changed.connect(_on_coins_changed)
 	GameManager.distance_changed.connect(_on_distance_changed)
 	GameManager.game_over.connect(_on_game_over)
 	GameManager.state_changed.connect(_on_state_changed)
+	GameManager.muted_changed.connect(_on_muted_changed)
 
 	coin_label.text = str(GameManager.total_coins)
+	_on_muted_changed(GameManager.muted)
 	_on_state_changed(GameManager.state)
 
 func _full_rect_control() -> Control:
@@ -60,6 +65,11 @@ func _build_title() -> void:
 	sub.add_theme_font_size_override("font_size", 24)
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(sub)
+
+	title_stats_label = Label.new()
+	title_stats_label.add_theme_font_size_override("font_size", 16)
+	title_stats_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title_stats_label)
 
 	var spacer := Control.new()
 	spacer.custom_minimum_size = Vector2(0, 30)
@@ -174,6 +184,17 @@ func _build_game_over() -> void:
 	retry_btn.pressed.connect(_on_play_pressed)
 	vbox.add_child(retry_btn)
 
+func _build_mute_button() -> void:
+	mute_btn = Button.new()
+	mute_btn.custom_minimum_size = Vector2(50, 50)
+	mute_btn.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	mute_btn.position = Vector2(20, -70)
+	mute_btn.pressed.connect(func(): GameManager.set_muted(not GameManager.muted))
+	add_child(mute_btn)
+
+func _on_muted_changed(is_muted: bool) -> void:
+	mute_btn.text = "MUTE" if not is_muted else "UNMUTE"
+
 func _on_play_pressed() -> void:
 	main.begin_new_run()
 
@@ -193,3 +214,8 @@ func _on_state_changed(state: int) -> void:
 	hud_layer.visible = state == GameManager.State.PLAYING or state == GameManager.State.PAUSED
 	pause_layer.visible = state == GameManager.State.PAUSED
 	game_over_layer.visible = state == GameManager.State.GAME_OVER
+	if state == GameManager.State.TITLE:
+		if GameManager.best_distance > 0:
+			title_stats_label.text = "Best: %dm   Coins: %d" % [GameManager.best_distance, GameManager.total_coins]
+		else:
+			title_stats_label.text = ""

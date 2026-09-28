@@ -108,6 +108,7 @@ func _try_move(d_row: int, d_col: int) -> void:
 	hop_to = _cell_to_world(row, col)
 	hop_elapsed = 0.0
 	is_hopping = true
+	Sfx.play("hop")
 	if lane_manager:
 		lane_manager.on_player_row_changed(row)
 
@@ -169,4 +170,5 @@ func _on_area_exited(area: Area3D) -> void:
 
 func _die() -> void:
 	if GameManager.state == GameManager.State.PLAYING:
+		Sfx.play("death")
 		GameManager.end_run()
