@@ -116,6 +116,48 @@ func _build_title() -> void:
 	play_btn.pressed.connect(_on_play_pressed)
 	vbox.add_child(play_btn)
 
+	_build_how_to_play(title_layer)
+
+func _build_how_to_play(parent: Control) -> void:
+	var panel := PanelContainer.new()
+	panel.add_theme_stylebox_override("panel", _rounded_style(Color(0.08, 0.08, 0.08, 0.7), 18))
+	panel.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+	panel.position.y = -270
+	panel.offset_left = 24
+	panel.offset_right = -24
+	parent.add_child(panel)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 8)
+	panel.add_child(vbox)
+
+	var heading := Label.new()
+	heading.text = "HOW TO PLAY"
+	heading.add_theme_font_size_override("font_size", 16)
+	heading.add_theme_color_override("font_color", Color(1, 0.85, 0.3))
+	vbox.add_child(heading)
+
+	_add_how_to_play_row(vbox, "▲", "TAP to move forward")
+	_add_how_to_play_row(vbox, "◀▶", "SWIPE left/right to change lane")
+	_add_how_to_play_row(vbox, "≈", "STEP ON CROCS to ride across the river")
+
+func _add_how_to_play_row(parent: Control, icon_text: String, desc: String) -> void:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	parent.add_child(row)
+
+	var icon := Label.new()
+	icon.text = icon_text
+	icon.custom_minimum_size = Vector2(30, 0)
+	icon.add_theme_font_size_override("font_size", 16)
+	icon.add_theme_color_override("font_color", Color(1, 0.85, 0.3))
+	row.add_child(icon)
+
+	var desc_label := Label.new()
+	desc_label.text = desc
+	desc_label.add_theme_font_size_override("font_size", 14)
+	row.add_child(desc_label)
+
 func _build_hud() -> void:
 	hud_layer = _full_rect_control()
 	add_child(hud_layer)
