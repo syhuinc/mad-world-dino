@@ -1,8 +1,28 @@
 extends Node3D
 
+const ModelUtil = preload("res://scripts/ModelUtil.gd")
+
 enum Kind { ROCK, BUSH, PALM_TREE, FLOWER, REED, LILY_PAD }
 
+const MODEL_PATHS := {
+	Kind.ROCK: "res://assets/props/rock.glb",
+	Kind.BUSH: "res://assets/props/bush.glb",
+	Kind.PALM_TREE: "res://assets/props/palm.glb",
+}
+const MODEL_SIZES := {
+	Kind.ROCK: Vector3(0.55, 0.45, 0.55),
+	Kind.BUSH: Vector3(0.75, 0.65, 0.75),
+	Kind.PALM_TREE: Vector3(0.6, 1.9, 0.6),
+}
+
 func setup(kind: int) -> void:
+	var model_path: String = MODEL_PATHS.get(kind, "")
+	if model_path != "" and ResourceLoader.exists(model_path):
+		var size: Vector3 = MODEL_SIZES[kind]
+		var model := ModelUtil.load_fitted(model_path, size)
+		model.position.y = size.y * 0.5
+		add_child(model)
+		return
 	match kind:
 		Kind.ROCK:
 			_add_rock()

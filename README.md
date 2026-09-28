@@ -8,7 +8,7 @@ A Crossy Road-style lane crosser built in Godot 4. Dinosaurs are the "traffic":
 
 Also has: coin collection with a persistent wallet, best-distance tracking, a title screen showing your best run, pause/resume, procedurally-generated sound effects (hop/coin/death — no audio files needed) with a mute toggle, and Android back-button handling (pauses in-run, quits from the title/game-over screens).
 
-All visuals are placeholder primitives (boxes/capsules with flat colors) standing in for the final 3D models. No Meshy assets are wired in yet — that's the planned next step once this is playtested.
+All 7 creatures (player, T-Rex, Spinosaurus, Triceratops, Gallimimus, Parasaurolophus, crocodile), the grass/dirt/water ground tiles, and the rock/bush/palm-tree edge decorations are real Meshy-generated `.glb` models (see `reference/INDEX.md` for exactly what was generated from what, and what's still a primitive placeholder — a few decoration types and everything outside World 01's biome).
 
 ## Requirements
 
@@ -50,15 +50,25 @@ This part needs the actual Android SDK + a JDK, which this environment doesn't h
 - `scripts/Coin.gd` — collectible
 - `scripts/CameraRig.gd` — fixed-angle orthographic follow camera
 - `scripts/HUD.gd` — title / in-run HUD / pause / game-over screens, built entirely in code (no hand-authored `.tscn` UI layout)
+- `scripts/ModelUtil.gd` — loads a `.glb`, measures its true combined mesh bounding box, and scales/centers it (non-uniformly, per axis, with an optional yaw correction) to exactly match a target size. Used everywhere a real model replaces a primitive.
+- `scripts/Decoration.gd` — cosmetic edge dressing (rock/bush/palm-tree models, or flower/reed/lily-pad primitives) placed outside the playable columns
 
-Almost everything is built procedurally at runtime rather than as hand-placed `.tscn` scene trees — this was authored without access to a running Godot editor to test in, so expect to need to open it and tweak numeric constants (tile size, camera distance/angle, obstacle speeds, spawn rates) once you can see it move. `LaneManager.TILE_SIZE`/`COLS` and `Player.TILE_SIZE`/`COLS` are the main knobs.
+Most gameplay logic is built procedurally at runtime rather than as hand-placed `.tscn` scene trees. `LaneManager.TILE_SIZE`/`COLS` and `Player.TILE_SIZE`/`COLS` are the main tunable knobs for scale/lane width.
 
-## Swapping in Meshy-generated assets
+## Meshy-generated assets
 
-Right now dinosaurs/crocs/coins/the player are `BoxMesh`/`CapsuleMesh`/`CylinderMesh` primitives created in code. `reference/` holds the actual Meshy-ready spec sheets (per-creature size/color/turnaround, plus a full tile & prop atlas) — see `reference/INDEX.md` for what each file is and which numbers are already wired into the code vs. still placeholder. No Meshy API key is configured in this dev environment, so nothing has been generated yet.
+`assets/creatures/`, `assets/tiles/`, and `assets/props/` hold the real `.glb` models (plus their extracted texture `.jpg`s), generated via Meshy's image-to-3D API from clean single-subject crops of the reference art in `reference/`. `reference/INDEX.md` is the map: what every reference file actually is, which numbers/colors from it are wired into the code, what's already generated vs. still a primitive placeholder, and the known cosmetic issues (e.g. the player model's backpack came out as a slightly separated piece).
 
-To bring in real Meshy 3D models once you have them:
+To generate more assets the same way: crop a clean single-subject image (see `reference/INDEX.md` for which reference sheets already work as-is vs. need cropping), POST it as a base64 data URI to Meshy's `image-to-3d` endpoint, poll until `SUCCEEDED`, download the `model_urls.glb`. Wire it in via `ModelUtil.load_fitted(path, target_size)` — it handles scale, centering, and (if the model faces the camera instead of sideways, which was true for every creature here) a yaw correction.
 
-1. Generate models via Meshy (image-to-3D from `reference/creatures/*_spec.png` and `reference/tiles/*`), export as `.glb`, and drop them under a new `assets/` folder in this project.
-2. In `Obstacle.gd` / `Croc.gd` / `Coin.gd` / `Player.gd`, replace the `MeshInstance3D` + primitive-mesh block in `setup()`/`_ready()` with `load("res://assets/<file>.glb").instantiate()` (or preload the PackedScene and instance it), keeping the existing `CollisionShape3D` sizing so hit detection stays consistent with the visual scale.
-3. `LaneManager._species_data()` is the single place that maps each dinosaur species to its stats (sizes there already match the spec sheets — see `reference/INDEX.md`) — add a `model_path` key there once you have per-species `.glb` files, and read it in `_spawn_dino`. Restore each species' authentic spec-sheet color at the same time (see `reference/INDEX.md` for why the in-game colors currently don't match).
+### Verifying changes by actually rendering them
+
+This project was developed without a live Godot editor. Instead, the dev environment downloaded the Godot 4.3 Linux binary and ran it headlessly under `Xvfb` with Mesa's software GL renderer (`llvmpipe`), driving a temporary debug scene that builds the game, waits a few frames, and saves a screenshot — which caught several real bugs (see `reference/INDEX.md`'s last section) that would have been invisible from code review alone. Roughly:
+
+```
+LIBGL_ALWAYS_SOFTWARE=1 xvfb-run -a --server-args="-screen 0 720x1280x24" \
+  /path/to/Godot_v4.3-stable_linux.x86_64 --path . \
+  --rendering-driver opengl3 --rendering-method gl_compatibility \
+  res://path/to/a/debug/capture/scene.tscn
+```
+where the debug scene's script instances `Main.tscn`, drives it (`begin_new_run()`, simulated `_try_move()` calls, etc.), and calls `get_viewport().get_texture().get_image().save_png(...)` at the points worth inspecting. Run `--headless --import` once first after adding any new binary asset (glb/png/etc.) so Godot generates its `.import` cache before the render pass. If you're changing anything visual, prefer this over guessing.
