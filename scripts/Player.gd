@@ -121,17 +121,19 @@ func _physics_process(delta: float) -> void:
 		hop_elapsed += delta
 		var t = clamp(hop_elapsed / HOP_TIME, 0.0, 1.0)
 		var pos = hop_from.lerp(hop_to, t)
-		pos.y = sin(t * PI) * HOP_HEIGHT
+		var height_phase = sin(t * PI)
+		pos.y = height_phase * HOP_HEIGHT
 		global_position = pos
-		var stretch = 1.0 + abs(cos(t * PI)) * 0.25
+		var stretch = 1.0 + height_phase * 0.25
 		_mesh.scale = Vector3(1.0 / sqrt(stretch), stretch, 1.0 / sqrt(stretch))
 		if t >= 1.0:
 			is_hopping = false
 			global_position = hop_to
-			_mesh.scale = Vector3.ONE
+			_mesh.scale = Vector3(1.25, 0.72, 1.25)
 			_check_landing()
 			_spawn_landing_puff()
 	else:
+		_mesh.scale = _mesh.scale.lerp(Vector3.ONE, clamp(delta * 10.0, 0.0, 1.0))
 		_check_resting()
 
 func _spawn_landing_puff() -> void:
