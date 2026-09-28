@@ -236,18 +236,31 @@ func _spawn_river(parent: Node3D, row: int) -> Array:
 	var direction = 1.0 if randi() % 2 == 0 else -1.0
 	var speed = randf_range(1.0, 1.8)
 	var half = COLS * TILE_SIZE * 0.5
-	# Crocodile size (length x width x height) from the Meshy reference spec.
-	var croc_len = 2.6
-	var croc_size = Vector3(croc_len, 0.6, 1.0)
+
+	var use_logs = randf() < 0.3
+	var platform_model: String
+	var platform_size: Vector3
+	var fallback_color: Color
+	if use_logs:
+		platform_model = "res://assets/tiles/log.glb"
+		platform_size = Vector3(2.4, 0.5, 1.1)
+		fallback_color = Color(0.45, 0.3, 0.15)
+	else:
+		# Crocodile size (length x width x height) from the Meshy reference spec.
+		platform_model = "res://assets/creatures/crocodile.glb"
+		platform_size = Vector3(2.6, 0.6, 1.0)
+		fallback_color = Color(0.25, 0.45, 0.25)
+
+	var platform_len = platform_size.x
 	var gap = TILE_SIZE * 1.3
-	var spacing = croc_len + gap
+	var spacing = platform_len + gap
 	var count = int((COLS * TILE_SIZE * 2) / spacing)
 	var offset = randf_range(0, spacing)
 	for i in range(count):
 		var start_x = -half - offset + i * spacing
 		var croc = preload("res://scripts/Croc.gd").new()
 		croc.add_to_group("croc")
-		croc.setup(direction * speed, croc_size, COLS * TILE_SIZE * 2.0)
+		croc.setup(direction * speed, platform_size, COLS * TILE_SIZE * 2.0, platform_model, fallback_color)
 		croc.position = Vector3(start_x, 0.15, 0)
 		parent.add_child(croc)
 		result.append(croc)

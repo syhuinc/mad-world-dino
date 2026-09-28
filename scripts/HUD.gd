@@ -139,7 +139,7 @@ func _build_how_to_play(parent: Control) -> void:
 
 	_add_how_to_play_row(vbox, "▲", "TAP to move forward")
 	_add_how_to_play_row(vbox, "◀▶", "SWIPE left/right to change lane")
-	_add_how_to_play_row(vbox, "≈", "STEP ON CROCS to ride across the river")
+	_add_how_to_play_row(vbox, "≈", "STEP ON CROCS/LOGS to ride across the river")
 
 func _add_how_to_play_row(parent: Control, icon_text: String, desc: String) -> void:
 	var row := HBoxContainer.new()

@@ -65,11 +65,16 @@ limitation) — not fixed, since the character is otherwise correct.
   single-subject shots (no cropping needed for Meshy input).
 
 **Real `.glb` models exist for:**
-- Grass, dirt, water, stone tiles (`assets/tiles/*.glb`; grass/dirt/water
-  generated directly from the `*_tile_closeup.png` hero renders, stone from
-  a crop of `tile_variant_sheet_a.png`'s row 1) — `LaneManager._make_ground()`
-  tiles 9 individual instances of the right model across each lane's
-  width instead of one stretched box.
+- Grass, dirt, water, stone, log tiles (`assets/tiles/*.glb`;
+  grass/dirt/water generated directly from the `*_tile_closeup.png` hero
+  renders, stone and log from crops of `tile_variant_sheet_a.png`'s row 1)
+  — `LaneManager._make_ground()` tiles 9 individual instances of the right
+  ground model across each lane's width instead of one stretched box. The
+  log model doubles as a river platform: `_spawn_river()` uses it in place
+  of the crocodile ~30% of the time via `Croc.gd`'s now-generic
+  `model_path`/`fallback_color` params (same riding mechanics, just a log
+  reskin) — the mockup's "step on crocs" is the primary mechanic, logs are
+  visual variety on the same river lanes, not a separate lane type.
 - Rock (small), Bush, Tree (Palm) (`assets/props/*.glb`, generated from
   crops of `tile_variant_sheet_a.png`'s prop row) — used by
   `Decoration.gd` for the cosmetic edge dressing along each lane
