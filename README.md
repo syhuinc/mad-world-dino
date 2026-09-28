@@ -55,8 +55,10 @@ Almost everything is built procedurally at runtime rather than as hand-placed `.
 
 ## Swapping in Meshy-generated assets
 
-Right now dinosaurs/crocs/coins/the player are `BoxMesh`/`CapsuleMesh`/`CylinderMesh` primitives created in code. To bring in real Meshy 3D models later:
+Right now dinosaurs/crocs/coins/the player are `BoxMesh`/`CapsuleMesh`/`CylinderMesh` primitives created in code. `reference/` holds the actual Meshy-ready spec sheets (per-creature size/color/turnaround, plus a full tile & prop atlas) — see `reference/INDEX.md` for what each file is and which numbers are already wired into the code vs. still placeholder. No Meshy API key is configured in this dev environment, so nothing has been generated yet.
 
-1. Generate models via Meshy (text-to-3D or image-to-3D from the reference art), export as `.glb`, and drop them under a new `assets/` folder in this project.
+To bring in real Meshy 3D models once you have them:
+
+1. Generate models via Meshy (image-to-3D from `reference/creatures/*_spec.png` and `reference/tiles/*`), export as `.glb`, and drop them under a new `assets/` folder in this project.
 2. In `Obstacle.gd` / `Croc.gd` / `Coin.gd` / `Player.gd`, replace the `MeshInstance3D` + primitive-mesh block in `setup()`/`_ready()` with `load("res://assets/<file>.glb").instantiate()` (or preload the PackedScene and instance it), keeping the existing `CollisionShape3D` sizing so hit detection stays consistent with the visual scale.
-3. `LaneManager._species_data()` is the single place that maps each dinosaur species to its stats — add a `model_path` key there once you have per-species `.glb` files, and read it in `_spawn_dino`.
+3. `LaneManager._species_data()` is the single place that maps each dinosaur species to its stats (sizes there already match the spec sheets — see `reference/INDEX.md`) — add a `model_path` key there once you have per-species `.glb` files, and read it in `_spawn_dino`. Restore each species' authentic spec-sheet color at the same time (see `reference/INDEX.md` for why the in-game colors currently don't match).

@@ -124,17 +124,25 @@ func _spawn_coin(parent: Node3D, col: int) -> Node3D:
 	return coin
 
 func _species_data(species: int) -> Dictionary:
+	# Sizes (length x width x height) are taken from the Mad World Meshy
+	# reference spec sheets (reference/dinosaurs/); length maps to the X
+	# (movement) axis, width to Z (lane depth), height to Y.
+	# Colors are placeholder-legibility choices, not the spec's authentic
+	# palette (dinos are brown/tan there, same as the dirt lane, which
+	# reads fine on a detailed shaded model but disappears on a flat
+	# primitive box) — restore the spec colors once real models land.
 	match species:
-		DinoSpecies.PARA:
-			return {"color": Color(0.85, 0.8, 0.15), "size": Vector3(1.0, 0.9, 1.8), "speed": 1.6}
-		DinoSpecies.GALLI:
-			return {"color": Color(0.35, 0.7, 0.65), "size": Vector3(0.7, 0.8, 1.5), "speed": 2.8}
-		DinoSpecies.TRI:
-			return {"color": Color(0.3, 0.45, 0.25), "size": Vector3(1.8, 1.1, 2.4), "speed": 1.1}
-		DinoSpecies.TREX:
-			return {"color": Color(0.8, 0.12, 0.12), "size": Vector3(4.4, 2.4, 3.6), "speed": 1.3}
-		DinoSpecies.SPINO:
-			return {"color": Color(0.1, 0.3, 0.75), "size": Vector3(4.6, 2.1, 4.2), "speed": 1.4}
+		DinoSpecies.PARA: # spec: 2.0 x 0.8 x 1.4
+			return {"color": Color(0.85, 0.8, 0.15), "size": Vector3(2.0, 1.4, 0.8), "speed": 1.6}
+		DinoSpecies.GALLI: # spec: 1.8 x 0.6 x 1.6
+			return {"color": Color(0.35, 0.7, 0.65), "size": Vector3(1.8, 1.6, 0.6), "speed": 2.8}
+		DinoSpecies.TRI: # spec: 2.4 x 1.2 x 1.4
+			return {"color": Color(0.3, 0.45, 0.25), "size": Vector3(2.4, 1.4, 1.2), "speed": 1.1}
+		DinoSpecies.TREX: # spec: 3.0 x 1.8 x 2.0, scaled 1.4x so it genuinely
+			# dominates a lane per the "wait for the gap" design intent
+			return {"color": Color(0.8, 0.12, 0.12), "size": Vector3(4.2, 2.8, 2.52), "speed": 1.3}
+		DinoSpecies.SPINO: # spec: 3.2 x 1.6 x 1.8, scaled 1.4x (see T-Rex)
+			return {"color": Color(0.1, 0.3, 0.75), "size": Vector3(4.48, 2.24, 2.52), "speed": 1.4}
 	return {"color": Color.WHITE, "size": Vector3.ONE, "speed": 1.0}
 
 func _spawn_dino(parent: Node3D, species: int, start_x: float, direction: float, speed_mult: float) -> Node3D:
@@ -176,7 +184,9 @@ func _spawn_river(parent: Node3D, row: int) -> Array:
 	var direction = 1.0 if randi() % 2 == 0 else -1.0
 	var speed = randf_range(1.0, 1.8)
 	var half = COLS * TILE_SIZE * 0.5
-	var croc_len = TILE_SIZE * 1.4
+	# Crocodile size (length x width x height) from the Meshy reference spec.
+	var croc_len = 2.6
+	var croc_size = Vector3(croc_len, 0.6, 1.0)
 	var gap = TILE_SIZE * 1.3
 	var spacing = croc_len + gap
 	var count = int((COLS * TILE_SIZE * 2) / spacing)
@@ -185,7 +195,7 @@ func _spawn_river(parent: Node3D, row: int) -> Array:
 		var start_x = -half - offset + i * spacing
 		var croc = preload("res://scripts/Croc.gd").new()
 		croc.add_to_group("croc")
-		croc.setup(direction * speed, croc_len, COLS * TILE_SIZE * 2.0)
+		croc.setup(direction * speed, croc_size, COLS * TILE_SIZE * 2.0)
 		croc.position = Vector3(start_x, 0.15, 0)
 		parent.add_child(croc)
 		result.append(croc)

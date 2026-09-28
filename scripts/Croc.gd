@@ -3,13 +3,13 @@ extends Area3D
 var velocity_x: float = 0.0
 var half_range: float = 20.0
 
-func setup(vel_x: float, length: float, playfield_width: float) -> void:
+func setup(vel_x: float, size: Vector3, playfield_width: float) -> void:
 	velocity_x = vel_x
 	half_range = playfield_width * 0.5
 
 	var mesh := MeshInstance3D.new()
 	var box := BoxMesh.new()
-	box.size = Vector3(length, 0.3, 1.6)
+	box.size = size
 	mesh.mesh = box
 	var mat := StandardMaterial3D.new()
 	mat.albedo_color = Color(0.25, 0.45, 0.25)
@@ -18,7 +18,7 @@ func setup(vel_x: float, length: float, playfield_width: float) -> void:
 
 	var shape := CollisionShape3D.new()
 	var box_shape := BoxShape3D.new()
-	box_shape.size = Vector3(length, 0.3, 1.6)
+	box_shape.size = size
 	shape.shape = box_shape
 	add_child(shape)
 
