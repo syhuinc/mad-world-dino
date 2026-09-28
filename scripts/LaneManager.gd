@@ -5,6 +5,7 @@ enum DinoSpecies { PARA, GALLI, TRI, TREX, SPINO }
 
 const TILE_SIZE := 2.0
 const COLS := 9
+const Decoration = preload("res://scripts/Decoration.gd")
 
 var player: Node3D
 var lanes: Dictionary = {}
@@ -95,7 +96,28 @@ func _generate_row(row: int) -> void:
 			if randf() < 0.5:
 				nodes.append(_spawn_coin(lane_root, randi_range(1, COLS - 2)))
 
+	_decorate_edges(lane_root, type)
+
 	lanes[row] = {"type": type, "nodes": nodes, "root": lane_root}
+
+func _decorate_edges(lane_root: Node3D, type: int) -> void:
+	var half = COLS * TILE_SIZE * 0.5
+	for side in [-1.0, 1.0]:
+		if randf() >= 0.6:
+			continue
+		var deco := Decoration.new()
+		var kind: int
+		var y := 0.0
+		if type == LaneType.RIVER:
+			kind = Decoration.Kind.LILY_PAD if randf() < 0.5 else Decoration.Kind.REED
+			y = 0.05
+		else:
+			var pool = [Decoration.Kind.ROCK, Decoration.Kind.BUSH, Decoration.Kind.PALM_TREE, Decoration.Kind.FLOWER]
+			kind = pool[randi() % pool.size()]
+		deco.setup(kind)
+		var edge_margin = randf_range(0.6, 1.8)
+		deco.position = Vector3(side * (half + edge_margin), y, randf_range(-0.6, 0.6))
+		lane_root.add_child(deco)
 
 func _make_ground(type: int) -> MeshInstance3D:
 	var mesh := MeshInstance3D.new()
