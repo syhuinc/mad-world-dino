@@ -126,15 +126,15 @@ func _spawn_coin(parent: Node3D, col: int) -> Node3D:
 func _species_data(species: int) -> Dictionary:
 	match species:
 		DinoSpecies.PARA:
-			return {"color": Color(0.75, 0.65, 0.3), "size": Vector3(1.0, 0.9, 1.8), "speed": 1.6}
+			return {"color": Color(0.85, 0.8, 0.15), "size": Vector3(1.0, 0.9, 1.8), "speed": 1.6}
 		DinoSpecies.GALLI:
-			return {"color": Color(0.6, 0.55, 0.4), "size": Vector3(0.7, 0.8, 1.5), "speed": 2.8}
+			return {"color": Color(0.35, 0.7, 0.65), "size": Vector3(0.7, 0.8, 1.5), "speed": 2.8}
 		DinoSpecies.TRI:
-			return {"color": Color(0.55, 0.6, 0.45), "size": Vector3(1.8, 1.1, 2.4), "speed": 1.1}
+			return {"color": Color(0.3, 0.45, 0.25), "size": Vector3(1.8, 1.1, 2.4), "speed": 1.1}
 		DinoSpecies.TREX:
-			return {"color": Color(0.65, 0.25, 0.2), "size": Vector3(4.4, 2.4, 3.6), "speed": 1.3}
+			return {"color": Color(0.8, 0.12, 0.12), "size": Vector3(4.4, 2.4, 3.6), "speed": 1.3}
 		DinoSpecies.SPINO:
-			return {"color": Color(0.25, 0.4, 0.55), "size": Vector3(4.6, 2.1, 4.2), "speed": 1.4}
+			return {"color": Color(0.1, 0.3, 0.75), "size": Vector3(4.6, 2.1, 4.2), "speed": 1.4}
 	return {"color": Color.WHITE, "size": Vector3.ONE, "speed": 1.0}
 
 func _spawn_dino(parent: Node3D, species: int, start_x: float, direction: float, speed_mult: float) -> Node3D:
