@@ -45,7 +45,7 @@ func _build_title() -> void:
 	add_child(title_layer)
 
 	var bg := ColorRect.new()
-	bg.color = Color(0, 0, 0, 0.35)
+	bg.color = Color(0, 0, 0, 0.55)
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	title_layer.add_child(bg)
 
@@ -57,6 +57,9 @@ func _build_title() -> void:
 	var title := Label.new()
 	title.text = "MAD WORLD"
 	title.add_theme_font_size_override("font_size", 56)
+	title.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
+	title.add_theme_constant_override("shadow_offset_x", 0)
+	title.add_theme_constant_override("shadow_offset_y", 3)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(title)
 
