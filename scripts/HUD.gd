@@ -39,6 +39,37 @@ func _full_rect_control() -> Control:
 	c.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return c
 
+func _rounded_style(bg_color: Color, radius: int = 16) -> StyleBoxFlat:
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = bg_color
+	sb.set_corner_radius_all(radius)
+	sb.content_margin_left = 14
+	sb.content_margin_right = 14
+	sb.content_margin_top = 8
+	sb.content_margin_bottom = 8
+	return sb
+
+func _make_badge(icon_text: String, icon_color: Color) -> Dictionary:
+	var panel := PanelContainer.new()
+	panel.add_theme_stylebox_override("panel", _rounded_style(Color(0.1, 0.1, 0.1, 0.65)))
+
+	var box := HBoxContainer.new()
+	box.add_theme_constant_override("separation", 8)
+	panel.add_child(box)
+
+	var icon := Label.new()
+	icon.text = icon_text
+	icon.add_theme_font_size_override("font_size", 24)
+	icon.add_theme_color_override("font_color", icon_color)
+	box.add_child(icon)
+
+	var value := Label.new()
+	value.add_theme_font_size_override("font_size", 24)
+	value.add_theme_color_override("font_color", Color(1, 1, 1))
+	box.add_child(value)
+
+	return {"panel": panel, "value": value}
+
 func _build_title() -> void:
 	title_layer = _full_rect_control()
 	title_layer.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -89,34 +120,28 @@ func _build_hud() -> void:
 	hud_layer = _full_rect_control()
 	add_child(hud_layer)
 
-	var coin_box := HBoxContainer.new()
-	coin_box.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	coin_box.position = Vector2(20, 20)
-	hud_layer.add_child(coin_box)
-
-	var coin_icon := Label.new()
-	coin_icon.text = "*"
-	coin_icon.add_theme_font_size_override("font_size", 26)
-	coin_icon.add_theme_color_override("font_color", Color(1, 0.85, 0.2))
-	coin_box.add_child(coin_icon)
-
-	coin_label = Label.new()
+	var coin_badge := _make_badge("★", Color(1, 0.85, 0.2))
+	coin_badge["panel"].set_anchors_preset(Control.PRESET_TOP_LEFT)
+	coin_badge["panel"].position = Vector2(20, 20)
+	coin_label = coin_badge["value"]
 	coin_label.text = "0"
-	coin_label.add_theme_font_size_override("font_size", 26)
-	coin_box.add_child(coin_label)
+	hud_layer.add_child(coin_badge["panel"])
 
-	distance_label = Label.new()
+	var distance_badge := _make_badge("▶", Color(0.7, 0.9, 1.0))
+	distance_badge["panel"].set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	distance_badge["panel"].position = Vector2(-160, 20)
+	distance_label = distance_badge["value"]
 	distance_label.text = "0m"
-	distance_label.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	distance_label.position = Vector2(-120, 20)
-	distance_label.add_theme_font_size_override("font_size", 26)
-	hud_layer.add_child(distance_label)
+	hud_layer.add_child(distance_badge["panel"])
 
 	var pause_btn := Button.new()
-	pause_btn.text = "||"
+	pause_btn.text = "II"
 	pause_btn.custom_minimum_size = Vector2(50, 50)
+	pause_btn.add_theme_stylebox_override("normal", _rounded_style(Color(0.1, 0.1, 0.1, 0.65), 14))
+	pause_btn.add_theme_stylebox_override("hover", _rounded_style(Color(0.2, 0.2, 0.2, 0.75), 14))
+	pause_btn.add_theme_stylebox_override("pressed", _rounded_style(Color(0.05, 0.05, 0.05, 0.75), 14))
 	pause_btn.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	pause_btn.position = Vector2(-70, 70)
+	pause_btn.position = Vector2(-70, 80)
 	pause_btn.pressed.connect(func(): GameManager.set_paused(true))
 	hud_layer.add_child(pause_btn)
 
