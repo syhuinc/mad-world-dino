@@ -25,17 +25,28 @@ func _notification(what: int) -> void:
 func _setup_world() -> void:
 	var light := DirectionalLight3D.new()
 	light.rotation_degrees = Vector3(-55, -35, 0)
-	light.light_energy = 1.1
+	light.light_color = Color(1.0, 0.97, 0.9)
+	light.light_energy = 1.15
 	light.shadow_enabled = true
 	add_child(light)
 
 	var env := WorldEnvironment.new()
 	var e := Environment.new()
-	e.background_mode = Environment.BG_COLOR
-	e.background_color = Color(0.55, 0.78, 0.95)
-	e.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	e.ambient_light_color = Color(0.7, 0.75, 0.8)
-	e.ambient_light_energy = 0.6
+	e.background_mode = Environment.BG_SKY
+	var sky_mat := ProceduralSkyMaterial.new()
+	sky_mat.sky_top_color = Color(0.3, 0.58, 0.88)
+	sky_mat.sky_horizon_color = Color(0.75, 0.85, 0.85)
+	sky_mat.ground_bottom_color = Color(0.45, 0.72, 0.35)
+	sky_mat.ground_horizon_color = Color(0.75, 0.85, 0.85)
+	sky_mat.sun_angle_max = 30.0
+	var sky := Sky.new()
+	sky.sky_material = sky_mat
+	e.sky = sky
+	e.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
+	e.ambient_light_energy = 0.35
+	e.adjustment_enabled = true
+	e.adjustment_saturation = 1.15
+	e.adjustment_contrast = 1.05
 	env.environment = e
 	add_child(env)
 

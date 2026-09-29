@@ -34,6 +34,19 @@ near-continuous wall along both sides. A new **Fence** prop
 labeled Fence crop) is part of that mix, matching the mockup's wooden
 lane-boundary fences.
 
+Also driven by `lane_layout_mockup.png`: a lighting/color-grading pass in
+`Main._setup_world()`. The mockup's vividness (saturated blue water, warm
+golden light, punchy greens) isn't from the ground textures alone — it's
+also color grading and lighting on top. Added a `ProceduralSkyMaterial`
+sky (replacing the flat `BG_COLOR` background, and now the ambient light
+source instead of a flat ambient color), a warm-tinted sun, and
+`Environment.adjustment_*` for a saturation/contrast boost. First attempt
+way overshot this (energy 1.35 sun + a second fill light + sky ambient at
+0.7 + saturation 1.25 + glow all stacked together blew the whole scene out
+to near-white/yellow — caught immediately by the render pipeline, never
+would have been obvious from the code alone) — dropped the fill light
+entirely, ambient energy to 0.35, saturation to 1.15, and left glow off.
+
 Worth knowing if you touch camera or lane-width code: `CameraRig`'s X
 position follows the player (`global_position = player.global_position +
 OFFSET`), and the portrait viewport's orthographic width only shows about 3
