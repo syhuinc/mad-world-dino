@@ -47,6 +47,29 @@ to near-white/yellow — caught immediately by the render pipeline, never
 would have been obvious from the code alone) — dropped the fill light
 entirely, ambient energy to 0.35, saturation to 1.15, and left glow off.
 
+Two more direct additions from `lane_layout_mockup.png`, both in
+`LaneManager.gd`: `_add_lane_curb()` places a row of grey stone-paver blocks
+(batched into one `MultiMeshInstance3D` per lane, not one node per block —
+a lane-width curb needs ~36 of them) at the far edge of every lane, matching
+the mockup's curb between each lane and its fenced border; `_add_road_markings()`
+adds a two-segment dashed white line down the center of `DINO_RARE` lanes'
+dirt ground, matching the mockup's road-marking dashes. Both materials are
+`SHADING_MODE_UNSHADED` — the first attempt used normal shaded materials and
+the curb rendered as a strong, wrong-looking blue instead of grey, because a
+plain flat color (no texture, unlike every Meshy asset) picks up a lot more
+of the sky-based ambient light added in the lighting pass above; unshaded
+sidesteps that entirely, which is also just correct for what's meant to
+read as painted/set-dressing trim rather than a lit 3D object.
+
+Considered but skipped: a distant mountain/waterfall backdrop for the
+mockup's horizon. Rendering the game's actual start-of-run state confirmed
+the empty backdrop plane (`Main._setup_world()`) is only ever visible
+*behind* the player, and only for the first few hops of a run — everywhere
+ahead, where the mockup's distant scenery would sit, is already covered by
+real generated lane tiles well before the player reaches it (`LaneManager`
+generates 6+ rows ahead at all times). Elaborate background geometry there
+would essentially never be seen, so it wasn't built.
+
 Worth knowing if you touch camera or lane-width code: `CameraRig`'s X
 position follows the player (`global_position = player.global_position +
 OFFSET`), and the portrait viewport's orthographic width only shows about 3

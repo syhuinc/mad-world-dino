@@ -124,8 +124,58 @@ func _generate_row(row: int) -> void:
 				nodes.append(_spawn_coin(lane_root, randi_range(1, COLS - 2)))
 
 	_decorate_edges(lane_root, type, row)
+	_add_lane_curb(lane_root)
+	if type == LaneType.DINO_RARE:
+		_add_road_markings(lane_root)
 
 	lanes[row] = {"type": type, "nodes": nodes, "root": lane_root}
+
+# A thin strip of stone-paver blocks at the far edge of every lane, marking
+# the transition to the next lane — matches reference/lane_layout_mockup.png,
+# whose lanes are bordered by a distinct grey curb where the fenced/walled
+# edge dressing begins. Batched into one MultiMesh draw call per lane rather
+# than one node per block, since a lane this wide needs ~36 blocks.
+func _add_lane_curb(lane_root: Node3D) -> void:
+	var half = COLS * TILE_SIZE * 0.5
+	var block_width = 0.5
+	var count = int((half * 2.0) / block_width)
+	var box := BoxMesh.new()
+	box.size = Vector3(block_width * 0.85, 0.18, 0.35)
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.mesh = box
+	mm.instance_count = count
+	var z = TILE_SIZE * 0.5 - 0.12
+	for i in range(count):
+		var x = -half + block_width * 0.5 + i * block_width
+		mm.set_instance_transform(i, Transform3D(Basis(), Vector3(x, 0.09, z)))
+	var mmi := MultiMeshInstance3D.new()
+	mmi.multimesh = mm
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(0.58, 0.56, 0.54)
+	# Unshaded: these are small, flat-colored primitives (no texture), which
+	# turned out to pick up a strong blue cast from the sky-based ambient
+	# light added for the color-grading pass — much more visible on a plain
+	# color than on the textured Meshy assets. Painted-looking trim like a
+	# stone curb doesn't need to respond to that anyway.
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mmi.material_override = mat
+	lane_root.add_child(mmi)
+
+# Dashed center line on dirt "road" lanes, matching the mockup's road
+# markings.
+func _add_road_markings(lane_root: Node3D) -> void:
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(0.92, 0.92, 0.88)
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	for z in [-0.5, 0.5]:
+		var dash := MeshInstance3D.new()
+		var box := BoxMesh.new()
+		box.size = Vector3(0.12, 0.03, 0.6)
+		dash.mesh = box
+		dash.material_override = mat
+		dash.position = Vector3(0, 0.02, z)
+		lane_root.add_child(dash)
 
 func _decorate_edges(lane_root: Node3D, type: int, row: int) -> void:
 	var half = COLS * TILE_SIZE * 0.5
