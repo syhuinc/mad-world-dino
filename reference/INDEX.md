@@ -18,6 +18,32 @@ persistent top-left logo and crown-icon distance badge (`HUD.gd`) and the
 `MIXED` lane type (`LaneManager.gd`), matching the "Lane Examples" strip's
 6th entry, "Combination".
 
+`lane_layout_mockup.png` is a second reference, added later: a single
+consistent-camera-angle gameplay environment shot (dirt road lanes with
+lane-marking dashes, a water lane, dense rock-wall borders with palm trees/
+ferns/wooden fences on both sides). Unlike the hero shot above, this one is
+a legitimate in-game layout target, not just promotional art, and directly
+drove a rewrite of `LaneManager._decorate_edges()`: the old version placed
+one random prop per side at 60% chance per row, which — combined with the
+camera panning horizontally to follow the player (see below) — meant edge
+decoration was almost never actually visible during play. It's now a
+dedicated `_decorate_wall_edge()` that places 2 rocks every row plus a palm
+tree every 3rd row plus bush/flower/fence accents, forming a
+near-continuous wall along both sides. A new **Fence** prop
+(`assets/props/fence.glb`, generated from `tile_variant_sheet_a.png`'s
+labeled Fence crop) is part of that mix, matching the mockup's wooden
+lane-boundary fences.
+
+Worth knowing if you touch camera or lane-width code: `CameraRig`'s X
+position follows the player (`global_position = player.global_position +
+OFFSET`), and the portrait viewport's orthographic width only shows about 3
+tile-columns at a time — so edge decoration at `half + margin` (just past
+the played 9-column field) is essentially never on-screen unless the player
+is near column 0 or 8. This was found by literally screenshotting the
+player standing at the center column first (which showed nothing at the
+edges at all) and only then at column 0 (which showed the wall correctly)
+— another case the render pipeline caught that a code read wouldn't have.
+
 ## Creatures (`creatures/`)
 
 Each spec sheet gives: type (common/rare), movement pattern, an approximate

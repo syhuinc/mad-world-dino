@@ -2,7 +2,7 @@ extends Node3D
 
 const ModelUtil = preload("res://scripts/ModelUtil.gd")
 
-enum Kind { ROCK, BUSH, PALM_TREE, FLOWER, REED, LILY_PAD }
+enum Kind { ROCK, BUSH, PALM_TREE, FLOWER, REED, LILY_PAD, FENCE }
 
 const MODEL_PATHS := {
 	Kind.ROCK: "res://assets/props/rock.glb",
@@ -11,6 +11,7 @@ const MODEL_PATHS := {
 	Kind.FLOWER: "res://assets/props/flower.glb",
 	Kind.REED: "res://assets/props/reed.glb",
 	Kind.LILY_PAD: "res://assets/props/lily_pad.glb",
+	Kind.FENCE: "res://assets/props/fence.glb",
 }
 const MODEL_SIZES := {
 	Kind.ROCK: Vector3(0.55, 0.45, 0.55),
@@ -19,6 +20,7 @@ const MODEL_SIZES := {
 	Kind.FLOWER: Vector3(0.35, 0.4, 0.35),
 	Kind.REED: Vector3(0.3, 0.7, 0.3),
 	Kind.LILY_PAD: Vector3(0.6, 0.06, 0.6),
+	Kind.FENCE: Vector3(1.2, 0.6, 0.15),
 }
 
 func setup(kind: int) -> void:
@@ -42,6 +44,8 @@ func setup(kind: int) -> void:
 			_add_reed()
 		Kind.LILY_PAD:
 			_add_lily_pad()
+		Kind.FENCE:
+			_add_fence()
 
 func _mesh_child(mesh: Mesh, color: Color, pos: Vector3) -> MeshInstance3D:
 	var mi := MeshInstance3D.new()
@@ -103,3 +107,14 @@ func _add_lily_pad() -> void:
 	disc.bottom_radius = 0.3
 	disc.height = 0.03
 	_mesh_child(disc, Color(0.25, 0.6, 0.25), Vector3(0, 0.05, 0))
+
+func _add_fence() -> void:
+	var post_color = Color(0.5, 0.35, 0.2)
+	for x in [-0.5, 0.5]:
+		var post := BoxMesh.new()
+		post.size = Vector3(0.08, 0.55, 0.08)
+		_mesh_child(post, post_color, Vector3(x, 0.275, 0))
+	for y in [0.18, 0.4]:
+		var rail := BoxMesh.new()
+		rail.size = Vector3(1.1, 0.07, 0.05)
+		_mesh_child(rail, post_color, Vector3(0, y, 0))

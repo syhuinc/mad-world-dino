@@ -123,28 +123,55 @@ func _generate_row(row: int) -> void:
 			if randf() < 0.5:
 				nodes.append(_spawn_coin(lane_root, randi_range(1, COLS - 2)))
 
-	_decorate_edges(lane_root, type)
+	_decorate_edges(lane_root, type, row)
 
 	lanes[row] = {"type": type, "nodes": nodes, "root": lane_root}
 
-func _decorate_edges(lane_root: Node3D, type: int) -> void:
+func _decorate_edges(lane_root: Node3D, type: int, row: int) -> void:
 	var half = COLS * TILE_SIZE * 0.5
 	for side in [-1.0, 1.0]:
-		if randf() >= 0.6:
-			continue
-		var deco := Decoration.new()
-		var kind: int
-		var y := 0.0
 		if type == LaneType.RIVER:
-			kind = Decoration.Kind.LILY_PAD if randf() < 0.5 else Decoration.Kind.REED
-			y = 0.05
+			_decorate_river_edge(lane_root, side, half)
 		else:
-			var pool = [Decoration.Kind.ROCK, Decoration.Kind.BUSH, Decoration.Kind.PALM_TREE, Decoration.Kind.FLOWER]
-			kind = pool[randi() % pool.size()]
-		deco.setup(kind)
-		var edge_margin = randf_range(0.6, 1.8)
-		deco.position = Vector3(side * (half + edge_margin), y, randf_range(-0.6, 0.6))
-		lane_root.add_child(deco)
+			_decorate_wall_edge(lane_root, side, half, row)
+
+func _decorate_river_edge(lane_root: Node3D, side: float, half: float) -> void:
+	var deco := Decoration.new()
+	var kind = Decoration.Kind.LILY_PAD if randf() < 0.5 else Decoration.Kind.REED
+	deco.setup(kind)
+	var edge_margin = randf_range(0.6, 1.8)
+	deco.position = Vector3(side * (half + edge_margin), 0.05, randf_range(-0.6, 0.6))
+	lane_root.add_child(deco)
+
+# Builds a dense, near-continuous rock-wall border (with palm trees rising
+# out of it and fence/bush accents closer to the path) matching the canyon
+# look of reference/lane_layout_mockup.png, instead of the previous sparse
+# single-prop-at-60%-chance edge dressing.
+func _decorate_wall_edge(lane_root: Node3D, side: float, half: float, row: int) -> void:
+	for i in range(2):
+		var rock := Decoration.new()
+		rock.setup(Decoration.Kind.ROCK)
+		var margin = 0.5 + i * 1.0 + randf_range(-0.15, 0.15)
+		rock.position = Vector3(side * (half + margin), 0, randf_range(-0.9, 0.9))
+		lane_root.add_child(rock)
+
+	if row % 3 == 0:
+		var palm := Decoration.new()
+		palm.setup(Decoration.Kind.PALM_TREE)
+		palm.position = Vector3(side * (half + 1.3), 0, randf_range(-0.5, 0.5))
+		lane_root.add_child(palm)
+
+	if randf() < 0.4:
+		var accent := Decoration.new()
+		accent.setup(Decoration.Kind.BUSH if randf() < 0.6 else Decoration.Kind.FLOWER)
+		accent.position = Vector3(side * (half + 0.45), 0, randf_range(-0.9, 0.9))
+		lane_root.add_child(accent)
+
+	if randf() < 0.3:
+		var fence := Decoration.new()
+		fence.setup(Decoration.Kind.FENCE)
+		fence.position = Vector3(side * (half + 0.3), 0, 0)
+		lane_root.add_child(fence)
 
 func _make_ground(type: int) -> Node3D:
 	var container := Node3D.new()
