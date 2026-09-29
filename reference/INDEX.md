@@ -41,9 +41,16 @@ placeholder-legibility choices, not these sheets' authentic (mostly
 brown/tan/red) palette** — kept that way even after real models arrived
 because it reads better against the dirt lane; swap in the spec colors via
 each model's material if you want strict authenticity instead of contrast.
-Known cosmetic issue: the player model's backpack reconstructed as a small
-separate/detached piece next to the body (a common single-image-to-3D
-limitation) — not fixed, since the character is otherwise correct.
+The player model's backpack originally reconstructed as a small
+separate/detached piece next to the body — a single-image-to-3D limitation,
+since a front-only crop gives Meshy nothing to go on for what the back of
+the character actually looks like. Fixed by regenerating with Meshy's
+*multi-image-to-3d* endpoint instead, feeding it all four turnaround crops
+from the spec sheet (front/left/back/right) rather than a single front crop
+— with real back/side reference, the backpack reconstructed as a single
+attached mesh, correct from every angle. Verified by rendering the model
+from 0/90/180/270 degrees and in an actual gameplay capture before wiring it
+in.
 
 ## Tiles & props (`tiles/`)
 
