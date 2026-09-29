@@ -162,14 +162,16 @@ func _build_hud() -> void:
 	hud_layer = _full_rect_control()
 	add_child(hud_layer)
 
+	_build_gameplay_logo(hud_layer)
+
 	var coin_badge := _make_badge("★", Color(1, 0.85, 0.2))
 	coin_badge["panel"].set_anchors_preset(Control.PRESET_TOP_LEFT)
-	coin_badge["panel"].position = Vector2(20, 20)
+	coin_badge["panel"].position = Vector2(20, 80)
 	coin_label = coin_badge["value"]
 	coin_label.text = "0"
 	hud_layer.add_child(coin_badge["panel"])
 
-	var distance_badge := _make_badge("▶", Color(0.7, 0.9, 1.0))
+	var distance_badge := _make_badge("♛", Color(1, 0.85, 0.3))
 	distance_badge["panel"].set_anchors_preset(Control.PRESET_TOP_RIGHT)
 	distance_badge["panel"].position = Vector2(-160, 20)
 	distance_label = distance_badge["value"]
@@ -186,6 +188,29 @@ func _build_hud() -> void:
 	pause_btn.position = Vector2(-70, 80)
 	pause_btn.pressed.connect(func(): GameManager.set_paused(true))
 	hud_layer.add_child(pause_btn)
+
+func _build_gameplay_logo(parent: Control) -> void:
+	var panel := PanelContainer.new()
+	panel.add_theme_stylebox_override("panel", _rounded_style(Color(0.1, 0.1, 0.1, 0.55), 12))
+	panel.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	panel.position = Vector2(20, 20)
+	parent.add_child(panel)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 0)
+	panel.add_child(vbox)
+
+	var title := Label.new()
+	title.text = "MAD WORLD"
+	title.add_theme_font_size_override("font_size", 18)
+	title.add_theme_color_override("font_color", Color(1, 0.8, 0.2))
+	vbox.add_child(title)
+
+	var sub := Label.new()
+	sub.text = "WORLD 01 · DINO"
+	sub.add_theme_font_size_override("font_size", 10)
+	sub.add_theme_color_override("font_color", Color(0.85, 0.85, 0.85))
+	vbox.add_child(sub)
 
 func _build_pause() -> void:
 	pause_layer = _full_rect_control()

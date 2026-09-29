@@ -1,6 +1,6 @@
 extends Node3D
 
-enum LaneType { GRASS, GRASS_DANGER, ROCK, DINO_RARE, RIVER }
+enum LaneType { GRASS, GRASS_DANGER, ROCK, DINO_RARE, RIVER, MIXED }
 enum DinoSpecies { PARA, GALLI, TRI, TREX, SPINO }
 
 const TILE_SIZE := 2.0
@@ -13,6 +13,7 @@ const TILE_MODELS := {
 	LaneType.GRASS: "res://assets/tiles/grass.glb",
 	LaneType.GRASS_DANGER: "res://assets/tiles/grass.glb",
 	LaneType.ROCK: "res://assets/tiles/stone.glb",
+	LaneType.MIXED: "res://assets/tiles/grass.glb",
 }
 const DEFAULT_TILE_MODEL := "res://assets/tiles/dirt.glb"
 
@@ -86,7 +87,13 @@ func _generate_row(row: int) -> void:
 				if randf() < rare_chance:
 					type = LaneType.DINO_RARE
 				else:
-					type = LaneType.ROCK if randi() % 2 == 0 else LaneType.GRASS_DANGER
+					match randi() % 3:
+						0:
+							type = LaneType.ROCK
+						1:
+							type = LaneType.GRASS_DANGER
+						_:
+							type = LaneType.MIXED
 
 	var nodes := []
 	var ground := _make_ground(type)
@@ -100,6 +107,10 @@ func _generate_row(row: int) -> void:
 				nodes.append(_spawn_coin(lane_root, randi_range(1, COLS - 2)))
 		LaneType.ROCK:
 			nodes.append_array(_spawn_dino_common(lane_root, row, [DinoSpecies.TRI], 1, 2))
+			if randf() < 0.25:
+				nodes.append(_spawn_coin(lane_root, randi_range(1, COLS - 2)))
+		LaneType.MIXED:
+			nodes.append_array(_spawn_dino_common(lane_root, row, [DinoSpecies.PARA, DinoSpecies.GALLI, DinoSpecies.TRI], 2, 3))
 			if randf() < 0.25:
 				nodes.append(_spawn_coin(lane_root, randi_range(1, COLS - 2)))
 		LaneType.DINO_RARE:

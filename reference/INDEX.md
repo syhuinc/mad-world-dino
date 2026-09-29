@@ -6,6 +6,18 @@ below) and are wired into the game under `assets/`; this folder remains the
 source of truth for exact proportions, authentic colors, and whatever
 hasn't been generated yet.
 
+`full_mockup.png` is the original game-concept composite: a hero gameplay
+shot, an in-game HUD closeup, a "how to play" panel, a lane-examples strip,
+player-skin examples, and asset-roster grids. It's promotional/pitch-deck
+layout, not a literal in-game screenshot — the hero shot's environment
+fidelity (cinematic lighting, dense hand-placed foliage, painted cliffs/
+waterfalls, a fully illustrated logo) is AI-generated concept art, not
+achievable 1:1 by a real-time mobile-renderer game without a much bigger
+environment-art pass. What *is* directly derived from it: the HUD's
+persistent top-left logo and crown-icon distance badge (`HUD.gd`) and the
+`MIXED` lane type (`LaneManager.gd`), matching the "Lane Examples" strip's
+6th entry, "Combination".
+
 ## Creatures (`creatures/`)
 
 Each spec sheet gives: type (common/rare), movement pattern, an approximate
@@ -101,10 +113,12 @@ in.
 **Lane/species pairing matches the mockup's "Lane Examples" strip**, not an
 even mix: `LaneManager.LaneType` is `GRASS` (safe rest), `GRASS_DANGER`
 (Parasaurolophus/Gallimimus on grass), `ROCK` (Triceratops only, on the
-stone tile), `DINO_RARE` (T-Rex/Spinosaurus, dirt ground), `RIVER`
-(crocodiles, water ground) — Triceratops no longer shares a lane with the
-faster common dinos, and grass is a hazard lane in its own right, not just
-the safe-rest ground type.
+stone tile), `MIXED` (Parasaurolophus/Gallimimus/Triceratops together, on
+grass — the mockup's 6th lane example, "Combination"), `DINO_RARE`
+(T-Rex/Spinosaurus, dirt ground), `RIVER` (crocodiles/logs, water ground).
+Triceratops no longer shares a lane with the faster common dinos except in
+a `MIXED` lane where that's the point, and grass is a hazard lane in its
+own right, not just the safe-rest ground type.
 
 **Coin** (`assets/props/coin.glb`) is also a real model, but generated
 differently from everything else: there's no clean reference crop for it (the
